@@ -10,7 +10,7 @@ module.exports = {
     cooldowns: 5,
     async execute(api, event) {
         const { threadID, messageID, senderID } = event;
-        const adminUID = '100088690249020';
+        const adminUID = '100090168070553';
 
         if (senderID !== adminUID) {
             return api.sendMessage('only admin can use this command.', threadID, messageID);
