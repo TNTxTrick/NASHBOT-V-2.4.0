@@ -113,20 +113,7 @@ const handleMessage = async (api, event, prefix) => {
       api.sendMessage(`Command error: ${err.message}`, event.threadID);
     }
   }
-  randomReact(api, event);
 };
 
-const randomReact = (api, event) => {
-  const reactions = ["🥰", "😂", "😢", "🤤", "😍", "🤪", "🤔", "😋", "😇", "😱", "🥵", "🥺", "🤣"];
-  if (event.body) {
-    const randomCount = Math.floor(Math.random() * 3) + 1;
-    for (let i = 0; i < randomCount; i++) {
-      const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-      api.setMessageReaction(randomReaction, event.messageID, (err) => {
-        if (err) console.error("React error:", err);
-      });
-    }
-  }
-};
 
 init().then(() => app.listen(PORT, () => console.log(`NASHBOT is running http://localhost:${PORT}`)));
