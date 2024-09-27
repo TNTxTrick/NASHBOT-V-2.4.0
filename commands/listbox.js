@@ -1,7 +1,7 @@
 module.exports = {
   name: 'listbox',
-  description: 'List group information and leave specific group',
-  usage: '[nashPrefix]listbox or [nashPrefix]out <number>',
+  description: 'List group information, leave specific groups, or leave all groups',
+  usage: '[nashPrefix]listbox or [nashPrefix]out <numbers> or [nashPrefix]outall',
   nashPrefix: false,
   execute: async (api, event, args, prefix) => {
     try {
@@ -20,16 +20,29 @@ module.exports = {
 
       const listbox = listthread.sort((a, b) => b.sotv - a.sotv);
 
-      // Nếu có đối số `args` và lệnh là `out`, bot sẽ thoát khỏi nhóm chỉ định
-      if (args[0] === 'out' && args[1]) {
-        const groupIndex = parseInt(args[1]) - 1; // Chỉ số nhóm trong danh sách (0-based)
+      // Thoát khỏi tất cả các nhóm
+      if (args[0] === 'outall') {
+        for (const group of listbox) {
+          await api.removeUserFromGroup(api.getCurrentUserID(), group.id);
+        }
+        await api.sendMessage(`Bot đã rời khỏi tất cả các nhóm.`, event.threadID, event.messageID);
+        return;
+      }
 
-        if (groupIndex >= 0 && groupIndex < listbox.length) {
-          const groupToLeave = listbox[groupIndex];
-          await api.removeUserFromGroup(api.getCurrentUserID(), groupToLeave.id);
-          await api.sendMessage(`Bot đã rời khỏi nhóm: ${groupToLeave.name} (TID: ${groupToLeave.id})`, event.threadID, event.messageID);
+      // Nếu có đối số `args` và lệnh là `out`, bot sẽ thoát khỏi các nhóm chỉ định
+      if (args[0] === 'out' && args[1]) {
+        // Tách các số chỉ định ra (ví dụ: 'out 1 2 3' sẽ thành [1, 2, 3])
+        const groupIndexes = args.slice(1).map(n => parseInt(n) - 1); // 0-based index
+
+        const groupsToLeave = groupIndexes.map(i => listbox[i]).filter(g => g !== undefined);
+
+        if (groupsToLeave.length > 0) {
+          for (const group of groupsToLeave) {
+            await api.removeUserFromGroup(api.getCurrentUserID(), group.id);
+            await api.sendMessage(`Bot đã rời khỏi nhóm: ${group.name} (TID: ${group.id})`, event.threadID);
+          }
         } else {
-          await api.sendMessage(`Không tìm thấy nhóm với số thứ tự ${args[1]}.`, event.threadID, event.messageID);
+          await api.sendMessage(`Không tìm thấy nhóm với các số thứ tự bạn đã nhập.`, event.threadID, event.messageID);
         }
         return;
       }
