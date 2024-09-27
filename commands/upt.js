@@ -24,7 +24,7 @@ function generateStatusMessage() {
   const osPlatform = os.platform();
   const cpuArchitecture = os.arch();
 
-  return `Bot đẫhọt động được ${hours} giờ ${minutes} phút ${seconds} giây.\n\n` +
+  return `Bot đã hoạt động được ${hours} giờ ${minutes} phút ${seconds} giây.\n\n` +
     ` Cpu : ${cpuUsage}%\n` +
     ` RAM : ${ramUsage} MB\n` +
     ` Cores: ${cores}\n` +
