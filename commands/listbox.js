@@ -1,12 +1,11 @@
 module.exports = {
   name: 'listbox',
-  description: 'List group information and auto leave groups',
-  usage: '[nashPrefix]listbox',
+  description: 'List group information and leave specific group',
+  usage: '[nashPrefix]listbox or [nashPrefix]out <number>',
   nashPrefix: false,
   execute: async (api, event, args, prefix) => {
     try {
       const inbox = await api.getThreadList(100, null, ['INBOX']);
-      // Lọc các nhóm mà bot đã đăng ký và là nhóm chat
       const list = inbox.filter(group => group.isSubscribed && group.isGroup);
 
       const listthread = [];
@@ -21,16 +20,25 @@ module.exports = {
 
       const listbox = listthread.sort((a, b) => b.sotv - a.sotv);
 
-      let msg = '';
-      for (const [i, group] of listbox.entries()) {
-        msg += `${i + 1}. ${group.name}\n🧩TID: ${group.id}\n🐸Member: ${group.sotv}\n\n`;
+      // Nếu có đối số `args` và lệnh là `out`, bot sẽ thoát khỏi nhóm chỉ định
+      if (args[0] === 'out' && args[1]) {
+        const groupIndex = parseInt(args[1]) - 1; // Chỉ số nhóm trong danh sách (0-based)
 
-        // Điều kiện để bot tự động rời khỏi nhóm (ví dụ nếu nhóm có dưới 10 thành viên)
-        if (group.sotv < 10) {
-          await api.removeUserFromGroup(api.getCurrentUserID(), group.id);
-          msg += `🚪 Bot đã tự động rời khỏi nhóm: ${group.name}\n\n`;
+        if (groupIndex >= 0 && groupIndex < listbox.length) {
+          const groupToLeave = listbox[groupIndex];
+          await api.removeUserFromGroup(api.getCurrentUserID(), groupToLeave.id);
+          await api.sendMessage(`Bot đã rời khỏi nhóm: ${groupToLeave.name} (TID: ${groupToLeave.id})`, event.threadID, event.messageID);
+        } else {
+          await api.sendMessage(`Không tìm thấy nhóm với số thứ tự ${args[1]}.`, event.threadID, event.messageID);
         }
+        return;
       }
+
+      // Hiển thị danh sách nhóm nếu không có đối số `out`
+      let msg = '';
+      listbox.forEach((group, i) => {
+        msg += `${i + 1}. ${group.name}\n🧩TID: ${group.id}\n🐸Member: ${group.sotv}\n\n`;
+      });
 
       await api.sendMessage(msg, event.threadID, event.messageID);
     } catch (error) {
