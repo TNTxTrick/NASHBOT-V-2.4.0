@@ -24,13 +24,13 @@ function generateStatusMessage() {
   const osPlatform = os.platform();
   const cpuArchitecture = os.arch();
 
-  return `BOT has been working for ${hours} hour(s) ${minutes} minute(s) ${seconds} second(s).\n\n` +
-    `❖ Cpu usage: ${cpuUsage}%\n` +
-    `❖ RAM usage: ${ramUsage} MB\n` +
-    `❖ Cores: ${cores}\n` +
-    `❖ Ping: ${ping}\n` +
-    `❖ Operating System Platform: ${osPlatform}\n` +
-    `❖ System CPU Architecture: ${cpuArchitecture}`;
+  return `Bot đẫhọt động được ${hours} giờ ${minutes} phút ${seconds} giây.\n\n` +
+    ` Cpu : ${cpuUsage}%\n` +
+    ` RAM : ${ramUsage} MB\n` +
+    ` Cores: ${cores}\n` +
+    ` Ping: ${ping}\n` +
+    ` Operating System Platform: ${osPlatform}\n` +
+    ` System CPU Architecture: ${cpuArchitecture}`;
 }
 
 function getCpuUsage() {
